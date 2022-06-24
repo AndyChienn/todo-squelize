@@ -3,6 +3,7 @@ const exphbs = require('express-handlebars')
 const session = require('express-session')
 const bodyParser = require('body-parser')
 const methodOverride = require('method-override')
+const flash = require('connect-flash')
 const bcrypt = require('bcryptjs')
 
 const PORT = 3000
@@ -30,8 +31,16 @@ app.use(methodOverride('_method'))
 
 
 usePassport(app)
+app.use(flash())
 
-
+app.use((req, res, next) => {
+  // 你可以在這裡 console.log(req.user) 等資訊來觀察
+  res.locals.isAuthenticated = req.isAuthenticated()
+  res.locals.user = req.user
+  res.locals.warning_msg = req.flash('warning_msg')
+  res.locals.login_error = req.flash('error')
+  next()
+})
 
 
 app.use(routes)
